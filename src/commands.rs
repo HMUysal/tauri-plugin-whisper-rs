@@ -1,6 +1,6 @@
 use crate::{models::*, whisper::AppWhisperState, Result};
 use std::sync::Mutex;
-use tauri::{command, State};
+use tauri::{command, AppHandle, Manager, Runtime, State};
 
 /**
  * Initializes the Whisper context and state with the provided model path.
@@ -47,13 +47,32 @@ pub fn transcribe(
  * @returns {Result<TranscriptionResponse>} The transcribed text from the file or error details.
  */
 #[command]
-pub fn transcribe_from_file(
-    state: State<'_, Mutex<AppWhisperState>>,
+pub async fn transcribe_from_file<R: Runtime>(
+    app_handle: AppHandle<R>,
     payload: TranscriptionFileRequest,
 ) -> Result<TranscriptionResponse> {
-    let mut state: std::sync::MutexGuard<'_, AppWhisperState> =
-        state.lock().map_err(|e| e.to_string())?;
-    let result: TranscriptionResponse = state.transcribe_from_file(payload);
+    // We pass the AppHandle into spawn_blocking instead of the State reference.
+    // AppHandle is cheap to clone and perfectly safe to move across threads.
+    let result: TranscriptionResponse =
+        tokio::task::spawn_blocking(move || -> Result<TranscriptionResponse> {
+            // Access the global state safely from inside the background thread using the Manager trait
+            let state: State<'_, Mutex<AppWhisperState>> =
+                app_handle.state::<Mutex<AppWhisperState>>();
+
+            // Acquire the synchronous lock safely on the background thread
+            let mut state_guard = state
+                .lock()
+                .map_err(|e| format!("Mutex poison error: {}", e))?;
+
+            // Execute the heavy transcription method
+            let transcription_result: TranscriptionResponse =
+                state_guard.transcribe_from_file(payload);
+
+            Ok(transcription_result)
+        })
+        .await
+        .map_err(|e: tokio::task::JoinError| format!("Thread pool error: {}", e))??;
+
     Ok(result)
 }
 

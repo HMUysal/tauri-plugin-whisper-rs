@@ -1,6 +1,6 @@
 use tauri::{
     plugin::{Builder, TauriPlugin},
-    Manager, Runtime,
+    Manager, Runtime, Window, WindowEvent,
 };
 
 pub use models::*;
@@ -10,10 +10,9 @@ mod error;
 mod models;
 mod whisper;
 
+use crate::whisper::{AppWhisperState, WhisperRs};
 pub use error::{Error, Result};
 use std::sync::Mutex;
-
-use crate::whisper::{AppWhisperState, WhisperRs};
 
 /// Extensions to [`tauri::App`], [`tauri::AppHandle`] and [`tauri::Window`] to access the whisper-rs APIs.
 pub trait WhisperRsExt<R: Runtime> {
