@@ -29,26 +29,6 @@ pub struct AppWhisperState {
 
 impl AppWhisperState {
     pub fn initialize(&mut self, req: InitializeRequest) -> GenericResponse {
-        let mut dir_contents = String::new();
-        // Klasörü okumayı deniyoruz
-        if let Ok(entries) = std::fs::read_dir("") {
-            let mut files = Vec::new();
-            for entry in entries.flatten() {
-                if let Ok(file_name) = entry.file_name().into_string() {
-                    files.push(file_name);
-                }
-            }
-            // Dosya adlarını aralarına virgül koyarak birleştiriyoruz
-            dir_contents = files.join(", ");
-        } else {
-            dir_contents = "Could not read directory contents".to_string();
-        }
-
-        // Hem terminale detaylı log basıyoruz
-        println!(
-            "[ERROR] Model not found at: {}. Contents of that folder: [{}]",
-            req.model_path, dir_contents
-        );
         if !std::path::Path::new(&req.model_path).exists() {
             return GenericResponse {
                 status: false,

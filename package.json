@@ -1,6 +1,6 @@
 {
   "name": "tauri-plugin-whisper-rs-api",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "author": "Mehmet Uysal",
   "description": "Local Whisper-based audio transcription plugin for Tauri applications.",
   "type": "module",
