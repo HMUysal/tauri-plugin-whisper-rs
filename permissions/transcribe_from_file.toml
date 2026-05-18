@@ -1,0 +1,11 @@
+"$schema" = "../../schemas/schema.json"
+
+[[permission]]
+identifier = "allow-transcribe-from-file"
+description = "Enables the transcribe_from_file command without any pre-configured scope."
+commands.allow = ["transcribe_from_file"]
+
+[[permission]]
+identifier = "deny-transcribe-from-file"
+description = "Denies the transcribe_from_file command without any pre-configured scope."
+commands.deny = ["transcribe_from_file"]

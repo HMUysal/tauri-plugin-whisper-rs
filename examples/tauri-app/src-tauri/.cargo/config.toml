@@ -1,0 +1,26 @@
+[target.aarch64-linux-android]
+ar = "/home/mehmet/Android/Sdk/ndk/30.0.14904198/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-ar"
+linker = "/home/mehmet/Android/Sdk/ndk/30.0.14904198/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android24-clang"
+
+[target.x86_64-linux-android]
+ar = "/home/mehmet/Android/Sdk/ndk/30.0.14904198/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-ar"
+linker = "/home/mehmet/Android/Sdk/ndk/30.0.14904198/toolchains/llvm/prebuilt/linux-x86_64/bin/x86_64-linux-android24-clang"
+
+[target.i686-linux-android]
+ar = "/home/mehmet/Android/Sdk/ndk/30.0.14904198/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-ar"
+linker = "/home/mehmet/Android/Sdk/ndk/30.0.14904198/toolchains/llvm/prebuilt/linux-x86_64/bin/i686-linux-android24-clang"
+
+[target.armv7-linux-androideabi]
+ar = "/home/mehmet/Android/Sdk/ndk/30.0.14904198/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-ar"
+linker = "/home/mehmet/Android/Sdk/ndk/30.0.14904198/toolchains/llvm/prebuilt/linux-x86_64/bin/armv7a-linux-androideabi24-clang"
+
+[env]
+# Derleyiciler
+CC_x86_64-linux-android = "/home/mehmet/Android/Sdk/ndk/30.0.14904198/toolchains/llvm/prebuilt/linux-x86_64/bin/x86_64-linux-android24-clang"
+CXX_x86_64-linux-android = "/home/mehmet/Android/Sdk/ndk/30.0.14904198/toolchains/llvm/prebuilt/linux-x86_64/bin/x86_64-linux-android24-clang++"
+CC_aarch64-linux-android = "/home/mehmet/Android/Sdk/ndk/30.0.14904198/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android24-clang"
+CXX_aarch64-linux-android = "/home/mehmet/Android/Sdk/ndk/30.0.14904198/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android24-clang++"
+
+# CMake'in NDK'yı kaçırmasını engelleyen mutlak kilitler
+ANDROID_NDK_HOME = "/home/mehmet/Android/Sdk/ndk/30.0.14904198"
+CMAKE_TOOLCHAIN_FILE = "/home/mehmet/Android/Sdk/ndk/30.0.14904198/build/cmake/android.toolchain.cmake"

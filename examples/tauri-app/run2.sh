@@ -1,0 +1,4 @@
+
+clear
+
+CARGO_TARGET_AARCH64_LINUX_ANDROID_LINKER="$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android24-clang" CMAKE_TOOLCHAIN_FILE="$ANDROID_NDK_HOME/build/cmake/android.toolchain.cmake" CMAKE_SYSTEM_NAME="Android" CMAKE_SYSTEM_VERSION="24" CMAKE_ANDROID_ARCH_ABI="arm64-v8a" CMAKE_ANDROID_NDK="$ANDROID_NDK_HOME" CC="$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android24-clang" CXX="$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android24-clang++" AR="$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-ar" ANDROID_LLVM_TRIPLE="aarch64-linux-android" CFLAGS="--target=aarch64-linux-android24 -march=armv8-a" CXXFLAGS="--target=aarch64-linux-android24 -march=armv8-a" CMAKE_ASM_FLAGS="--target=aarch64-linux-android24" CRATE_CC_NO_DEFAULTS=1 CRATE_CC_NO_DEFAULTS=1 yarn tauri android dev
