@@ -1,6 +1,6 @@
 [package]
 name = "tauri-plugin-whisper-rs"
-version = "0.1.2"
+version = "0.2.0"
 authors = ["Mehmet Uysal"]
 description = "Local Whisper-based audio transcription plugin for Tauri applications."
 license = "MIT"
@@ -16,6 +16,11 @@ thiserror = "2"
 whisper-rs = { version = "0.16.0" }
 symphonia = { version = "0.5.5", features = ["all"] }
 tokio = "1.52.3"
+tauri-plugin-fs = "2.5.1"
+rubato = "1.0.1"
+audioadapter-buffers = "2.0.0"
+log = "0.4"
+android_logger = "0.14"
 
 [build-dependencies]
 tauri-plugin = { version = "2.6.2", features = ["build"] }

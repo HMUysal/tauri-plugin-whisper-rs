@@ -29,14 +29,18 @@ pub fn initialize(
  * @returns {Result<TranscriptionResponse>} The transcribed text or error details.
  */
 #[command]
-pub fn transcribe(
+pub fn transcribe<R: Runtime>(
     state: State<'_, Mutex<AppWhisperState>>,
+    app: tauri::AppHandle<R>,
     payload: TranscriptionRequest,
-) -> Result<TranscriptionResponse> {
+) -> Result<GenericResponse> {
     let mut state: std::sync::MutexGuard<'_, AppWhisperState> =
         state.lock().map_err(|e| e.to_string())?;
-    let result: TranscriptionResponse = state.transcribe(payload);
-    Ok(result)
+    state.transcribe(app, payload);
+    Ok(GenericResponse {
+        status: true,
+        message: "Started".to_string(),
+    })
 }
 
 /**
@@ -49,12 +53,13 @@ pub fn transcribe(
 #[command]
 pub async fn transcribe_from_file<R: Runtime>(
     app_handle: AppHandle<R>,
+    app: tauri::AppHandle<R>,
     payload: TranscriptionFileRequest,
-) -> Result<TranscriptionResponse> {
+) -> Result<GenericResponse> {
     // We pass the AppHandle into spawn_blocking instead of the State reference.
     // AppHandle is cheap to clone and perfectly safe to move across threads.
-    let result: TranscriptionResponse =
-        tokio::task::spawn_blocking(move || -> Result<TranscriptionResponse> {
+    let result: GenericResponse =
+        tokio::task::spawn_blocking(move || -> Result<GenericResponse> {
             // Access the global state safely from inside the background thread using the Manager trait
             let state: State<'_, Mutex<AppWhisperState>> =
                 app_handle.state::<Mutex<AppWhisperState>>();
@@ -65,10 +70,11 @@ pub async fn transcribe_from_file<R: Runtime>(
                 .map_err(|e| format!("Mutex poison error: {}", e))?;
 
             // Execute the heavy transcription method
-            let transcription_result: TranscriptionResponse =
-                state_guard.transcribe_from_file(payload);
-
-            Ok(transcription_result)
+            state_guard.transcribe_from_file(app, payload);
+            Ok(GenericResponse {
+                status: true,
+                message: "started".to_string(),
+            })
         })
         .await
         .map_err(|e: tokio::task::JoinError| format!("Thread pool error: {}", e))??;

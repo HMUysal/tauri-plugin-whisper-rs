@@ -1,4 +1,5 @@
 import { invoke } from "@tauri-apps/api/core";
+import { listen, UnlistenFn } from "@tauri-apps/api/event";
 
 /**
  * Request payload for initializing the Whisper model context.
@@ -75,12 +76,12 @@ export async function initialize(
  * Transcribes raw f32 PCM audio data sent directly from the frontend.
  *
  * @param {TranscriptionRequest} payload - Object containing raw audio array and settings.
- * @returns {Promise<TranscriptionResponse>} The transcription result or error.
+ * @returns {Promise<GenericResponse>} The transcription result or error.
  */
 export async function transcribe(
   payload: TranscriptionRequest,
-): Promise<TranscriptionResponse> {
-  return await invoke<TranscriptionResponse>("plugin:whisper-rs|transcribe", {
+): Promise<GenericResponse> {
+  return await invoke<GenericResponse>("plugin:whisper-rs|transcribe", {
     payload,
   });
 }
@@ -90,12 +91,12 @@ export async function transcribe(
  * Highly recommended for larger audio files to maintain optimal performance.
  *
  * @param {TranscriptionFileRequest} payload - Object containing file path and settings.
- * @returns {Promise<TranscriptionResponse>} The transcription result or error.
+ * @returns {Promise<GenericResponse>} The transcription result or error.
  */
 export async function transcribeFromFile(
   payload: TranscriptionFileRequest,
-): Promise<TranscriptionResponse> {
-  return await invoke<TranscriptionResponse>(
+): Promise<GenericResponse> {
+  return await invoke<GenericResponse>(
     "plugin:whisper-rs|transcribe_from_file",
     {
       payload,
@@ -111,4 +112,24 @@ export async function transcribeFromFile(
  */
 export async function release(): Promise<GenericResponse> {
   return await invoke<GenericResponse>("plugin:whisper-rs|release");
+}
+
+export async function listenTotalProcess(
+  callback: (n: number) => void,
+): Promise<UnlistenFn> {
+  return listen<number>("transcription_total_progress", (r) =>
+    callback(r.payload),
+  );
+}
+
+export async function listenProcess(
+  callback: (n: number) => void,
+): Promise<UnlistenFn> {
+  return listen<number>("transcription_progress", (r) => callback(r.payload));
+}
+
+export async function listenTranscription(
+  callback: (t: string) => void,
+): Promise<UnlistenFn> {
+  return listen<string>("transcription", (r) => callback(r.payload));
 }

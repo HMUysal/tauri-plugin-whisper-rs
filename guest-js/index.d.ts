@@ -3,6 +3,8 @@
  * These definitions match the Rust backend's camelCase serialization.
  */
 
+import { UnlistenFn } from "@tauri-apps/api/event";
+
 /**
  * Payload required to initialize the Whisper engine.
  */
@@ -87,3 +89,15 @@ export function transcribeFromFile(
  * Releases model resources and clears memory.
  */
 export function release(): Promise<GenericResponse>;
+
+export function listenTotalProcess(
+  callback: (n: number) => void,
+): Promise<UnlistenFn>;
+
+export function listenProcess(
+  callback: (n: number) => void,
+): Promise<UnlistenFn>;
+
+export function listenTranscription(
+  callback: (t: string) => void,
+): Promise<UnlistenFn>;

@@ -2,7 +2,8 @@
 
 > README created using AI  
   
-> Note: Building Whisper on the Rust side can be a bit of a pain in the ass due to NDK/C++ cross-compilation requirements.
+> Note: Building Whisper on the Rust side can be a bit of a pain in the ass due to NDK/C++ cross-compilation requirements. 
+
 
 Installation
 ```bash
@@ -23,37 +24,43 @@ bun tauri add whisper-rs
 
 `src-tauri/.cargo/config.toml`
 ```toml
-[target.aarch64-linux-android]
-ar = "/home/{user}/Android/Sdk/ndk/30.0.14904198/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-ar"
-linker = "/home/{user}/Android/Sdk/ndk/30.0.14904198/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android24-clang"
-
-[target.x86_64-linux-android]
-ar = "/home/{user}/Android/Sdk/ndk/30.0.14904198/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-ar"
-linker = "/home/{user}/Android/Sdk/ndk/30.0.14904198/toolchains/llvm/prebuilt/linux-x86_64/bin/x86_64-linux-android24-clang"
-
-[target.i686-linux-android]
-ar = "/home/{user}/Android/Sdk/ndk/30.0.14904198/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-ar"
-linker = "/home/{user}/Android/Sdk/ndk/30.0.14904198/toolchains/llvm/prebuilt/linux-x86_64/bin/i686-linux-android24-clang"
-
-[target.armv7-linux-androideabi]
-ar = "/home/{user}/Android/Sdk/ndk/30.0.14904198/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-ar"
-linker = "/home/{user}/Android/Sdk/ndk/30.0.14904198/toolchains/llvm/prebuilt/linux-x86_64/bin/armv7a-linux-androideabi24-clang"
-
 [env]
-# Derleyiciler
-CC_x86_64-linux-android = "/home/{user}/Android/Sdk/ndk/30.0.14904198/toolchains/llvm/prebuilt/linux-x86_64/bin/x86_64-linux-android24-clang"
-CXX_x86_64-linux-android = "/home/{user}/Android/Sdk/ndk/30.0.14904198/toolchains/llvm/prebuilt/linux-x86_64/bin/x86_64-linux-android24-clang++"
-CC_aarch64-linux-android = "/home/{user}/Android/Sdk/ndk/30.0.14904198/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android24-clang"
-CXX_aarch64-linux-android = "/home/{user}/Android/Sdk/ndk/30.0.14904198/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android24-clang++"
+ANDROID_NDK_HOME = "~/Android/Sdk/ndk/30.0.14904198"
+ANDROID_NDK_ROOT = "~/Android/Sdk/ndk/30.0.14904198"
 
-# CMake'in NDK'yı kaçırmasını engelleyen mutlak kilitler
-ANDROID_NDK_HOME = "/home/{user}/Android/Sdk/ndk/30.0.14904198"
-CMAKE_TOOLCHAIN_FILE = "/home/{user}/Android/Sdk/ndk/30.0.14904198/build/cmake/android.toolchain.cmake"
+CRATE_CC_NO_DEFAULTS = "1"
+CMAKE_SYSTEM_VERSION = "24"
+CMAKE_SYSTEM_NAME="Android"
+
+AR = "~/Android/Sdk/ndk/30.0.14904198/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-ar"
+
+CC_aarch64_linux_android = "~/Android/Sdk/ndk/30.0.14904198/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android24-clang"
+CXX_aarch64_linux_android = "~/Android/Sdk/ndk/30.0.14904198/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android24-clang++"
+CFLAGS_aarch64_linux_android = "--target=aarch64-linux-android24 -march=armv8-a"
+CXXFLAGS_aarch64_linux_android = "--target=aarch64-linux-android24 -march=armv8-a"
+
+CC_armv7_linux_androideabi = "~/Android/Sdk/ndk/30.0.14904198/toolchains/llvm/prebuilt/linux-x86_64/bin/armv7a-linux-androideabi24-clang"
+CXX_armv7_linux_androideabi = "~/Android/Sdk/ndk/30.0.14904198/toolchains/llvm/prebuilt/linux-x86_64/bin/armv7a-linux-androideabi24-clang++"
+CFLAGS_armv7_linux_androideabi = "--target=armv7-linux-androideabi24 -march=armv7-a -mfloat-abi=softfp -mfpu=vfpv3-d16"
+CXXFLAGS_armv7_linux_androideabi = "--target=armv7-linux-androideabi24 -march=armv7-a -mfloat-abi=softfp -mfpu=vfpv3-d16"
+CMAKE_ANDROID_ARCH_ABI_armv7_linux_androideabi="armeabi-v7a"
+
 ```
-run with
+
+run with (does not works for emulator)
 ```bash
 CARGO_TARGET_AARCH64_LINUX_ANDROID_LINKER="$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android24-clang" CMAKE_TOOLCHAIN_FILE="$ANDROID_NDK_HOME/build/cmake/android.toolchain.cmake" CMAKE_SYSTEM_NAME="Android" CMAKE_SYSTEM_VERSION="24" CMAKE_ANDROID_ARCH_ABI="arm64-v8a" CMAKE_ANDROID_NDK="$ANDROID_NDK_HOME" CC="$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android24-clang" CXX="$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android24-clang++" AR="$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-ar" ANDROID_LLVM_TRIPLE="aarch64-linux-android" CFLAGS="--target=aarch64-linux-android24 -march=armv8-a" CXXFLAGS="--target=aarch64-linux-android24 -march=armv8-a" CMAKE_ASM_FLAGS="--target=aarch64-linux-android24" CRATE_CC_NO_DEFAULTS=1 CRATE_CC_NO_DEFAULTS=1 yarn tauri android dev
 ```
+
+build seperately 
+```bash
+BINDGEN_EXTRA_CLANG_ARGS_armv7_linux_androideabi="--target=armv7-linux-androideabi24 -I $ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include" \
+yarn tauri android build --aab --target armv7
+yarn tauri android build --aab --target aarch64
+BINDGEN_EXTRA_CLANG_ARGS_armv7_linux_androideabi="--target=armv7-linux-androideabi24 -I $ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include" \
+yarn tauri android build --aab --target armv7 --target aarch64
+```
+
 ## Usage Guide
 
 Integrating the API on your frontend is straightforward. Below is the typical lifecycle of a transcription workflow:

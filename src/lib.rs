@@ -1,10 +1,11 @@
 use tauri::{
     plugin::{Builder, TauriPlugin},
-    Manager, Runtime, Window, WindowEvent,
+    Manager, Runtime,
 };
 
 pub use models::*;
 
+mod audio_processor;
 mod commands;
 mod error;
 mod models;
@@ -14,7 +15,6 @@ use crate::whisper::{AppWhisperState, WhisperRs};
 pub use error::{Error, Result};
 use std::sync::Mutex;
 
-/// Extensions to [`tauri::App`], [`tauri::AppHandle`] and [`tauri::Window`] to access the whisper-rs APIs.
 pub trait WhisperRsExt<R: Runtime> {
     fn whisper_rs(&self) -> &WhisperRs<R>;
 }
@@ -27,6 +27,12 @@ impl<R: Runtime, T: Manager<R>> crate::WhisperRsExt<R> for T {
 
 /// Initializes the plugin.
 pub fn init<R: Runtime>() -> TauriPlugin<R> {
+    #[cfg(target_os = "android")]
+    android_logger::init_once(
+        android_logger::Config::default()
+            .with_max_level(log::LevelFilter::Debug)
+            .with_tag("TAURI_RUST"),
+    );
     Builder::new("whisper-rs")
         .invoke_handler(tauri::generate_handler![
             commands::initialize,
