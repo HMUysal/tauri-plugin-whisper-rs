@@ -19,24 +19,45 @@ pub struct AudioProcessor<R: Runtime> {
     accumulator: Vec<f32>,
     raw_input_buffer: Vec<f32>,
     resample_buffer: Vec<f32>,
-    chunk_target: usize,
+    pub chunk_target: usize, // <--- Dışarıdan okunabilsin diye pub yapabilirsin veya getter yazabilirsin
     sample_rate: u32,
     resampler: Option<Fft<f32>>,
 }
 
 impl<R: Runtime> AudioProcessor<R> {
     pub fn new(app: AppHandle<R>) -> Self {
+        let default_seconds = 30.0;
+        let chunk_target = (default_seconds * 16000.0) as usize;
         Self {
             app: Some(app),
             file: None,
             probe: None,
-            accumulator: Vec::with_capacity(500_000),
+            accumulator: Vec::with_capacity(((default_seconds + 5.0) * 16000.0) as usize),
             raw_input_buffer: Vec::with_capacity(4096),
             resample_buffer: Vec::with_capacity(8192),
-            chunk_target: 480_000,
+            chunk_target,
             sample_rate: 16000,
             resampler: None,
         }
+    }
+
+    pub fn set_chunk_target_seconds(&mut self, seconds: i32) {
+        let target_samples = (seconds * 16000) as usize;
+
+        self.chunk_target = target_samples;
+
+        if self.accumulator.capacity() < target_samples {
+            if target_samples > self.accumulator.len() {
+                self.accumulator
+                    .reserve(target_samples - self.accumulator.len());
+            }
+        }
+
+        log::info!(
+            "AudioProcessor: Chunk target updated to {} seconds ({} samples)",
+            seconds,
+            target_samples
+        );
     }
 
     pub fn set_file(&mut self, path: &str) -> Result<(), String> {
@@ -55,7 +76,13 @@ impl<R: Runtime> AudioProcessor<R> {
             Ok(f) => f,
             Err(e) => {
                 error!("AudioProcessor@set_file-url {:?}", e);
-                return Err(format!("AudioProcessor@set_file-url {}", e));
+                match Url::from_file_path(path) {
+                    Ok(u) => u,
+                    Err(e) => {
+                        error!("AudioProcessor@set_file-url {:?}", e);
+                        return Err(format!("AudioProcessor@set_file-app"));
+                    }
+                }
             }
         };
 
@@ -326,22 +353,27 @@ impl<R: Runtime> AudioProcessor<R> {
             return;
         }
 
-        let search_start = self.chunk_target.saturating_sub(80_000);
+        let search_window_back = (self.chunk_target / 6).max(1600);
+        let search_start = self.chunk_target.saturating_sub(search_window_back);
+
         let window_size = 1600;
+
         let mut min_energy = f32::MAX;
         let mut cut_idx = self.chunk_target;
 
-        for i in
-            (search_start..self.chunk_target.saturating_sub(window_size)).step_by(window_size / 2)
-        {
-            let mut energy = 0.0;
-            for j in 0..window_size {
-                energy += self.accumulator[i + j].abs();
-            }
+        let loop_end = self.chunk_target.saturating_sub(window_size);
 
-            if energy < min_energy {
-                min_energy = energy;
-                cut_idx = i + window_size / 2;
+        if search_start < loop_end {
+            for i in (search_start..loop_end).step_by(window_size / 2) {
+                let mut energy = 0.0;
+                for j in 0..window_size {
+                    energy += self.accumulator[i + j].abs();
+                }
+
+                if energy < min_energy {
+                    min_energy = energy;
+                    cut_idx = i + window_size / 2;
+                }
             }
         }
 

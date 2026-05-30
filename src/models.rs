@@ -24,6 +24,7 @@ pub struct TranscriptionFileRequest {
     pub audio_path: String,
     pub patience: Option<f32>,
     pub beam_size: Option<i32>,
+    pub chunk_size: Option<i32>,
     pub language: Option<String>,
 }
 

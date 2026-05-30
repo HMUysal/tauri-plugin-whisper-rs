@@ -99,13 +99,15 @@ impl AppWhisperState {
         app: AppHandle<R>,
         req: TranscriptionFileRequest,
     ) {
+        let patience = req.patience;
+        let beam_size = req.beam_size;
+        let chunk_suze = req.chunk_size.unwrap_or(30);
+        let language = req.language.clone();
+
         let mut ap = AudioProcessor::new(app.clone());
         let _ = ap.set_file(&req.audio_path);
         let _ = ap.set_file_info();
-
-        let patience = req.patience;
-        let beam_size = req.beam_size;
-        let language = req.language.clone();
+        let _ = ap.set_chunk_target_seconds(chunk_suze);
 
         let callback = move |data: Vec<f32>| {
             let r = TranscriptionRequest {

@@ -1,6 +1,6 @@
 [package]
 name = "tauri-plugin-whisper-rs"
-version = "0.2.0"
+version = "0.2.1"
 authors = ["Mehmet Uysal"]
 description = "Local Whisper-based audio transcription plugin for Tauri applications."
 license = "MIT"
