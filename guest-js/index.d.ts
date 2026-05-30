@@ -36,6 +36,7 @@ export interface TranscriptionFileRequest {
   /** Optional patience factor for the beam search algorithm. */
   patience?: number;
   /** Optional number of beams for the search. */
+  chunkSize?: number;
   beamSize?: number;
   /** Optional ISO 639-1 language code. */
   language?: string;

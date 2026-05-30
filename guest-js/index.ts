@@ -33,6 +33,7 @@ export interface TranscriptionFileRequest {
   patience?: number;
   /** Optional beam size for transcription quality */
   beamSize?: number;
+  chunkSize?: number;
   /** Optional ISO language code (e.g., "tr", "en") */
   language?: string;
 }
